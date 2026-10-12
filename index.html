@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Pendaftaran PORSENI KKM 003 NGUMPOBAN</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SheetJS untuk template & impor Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Feather Icons CDN -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #1e293b;
+    }
+    input, select, textarea, button {
+      font-size: 13px !important;
+    }
+    input[type="date"] {
+      min-height: 40px;
+      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+    }
+    .field-error {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
+    }
+    @media print {
+      body * { visibility: hidden !important; }
+      #printableArea, #printableArea * { visibility: visible !important; }
+      #printableArea {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 24px !important;
+        background: white !important;
+        z-index: 999999 !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen antialiased flex flex-col justify-between p-2 sm:p-4">
+
+  <!-- Banner Header Responsif -->
+  <header class="max-w-5xl mx-auto w-full bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-800 text-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-emerald-700/50">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4 w-full md:w-auto">
+        <img 
+          src="https://lh3.googleusercontent.com/d/1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp" 
+          alt="Logo Kemenag" 
+          class="h-16 sm:h-20 w-auto object-contain shrink-0 drop-shadow select-none"
+          onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp&sz=w400';"
+        />
+        <div>
+          <span class="bg-emerald-950/70 text-emerald-300 text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border border-emerald-500/30">KKM 003 NGUMPOBAN</span>
+          <h1 class="text-lg sm:text-2xl font-black tracking-tight mt-1 leading-snug">Pendaftaran PORSENI 2026</h1>
+          <p class="text-xs text-emerald-100/90 leading-tight">Ngunut • Sumbergempol • Pucanglaban</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+        <button type="button" onclick="bukaModalRekap()" class="flex-1 md:flex-initial h-10 px-4 bg-white/10 hover:bg-white/20 active:bg-white/25 text-white border border-white/30 text-xs font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+          <i data-feather="bar-chart-2" class="w-4 h-4"></i>
+          <span>Rekap Sementara</span>
+        </button>
+        <button type="button" onclick="bukaModalCariBukti()" class="flex-1 md:flex-initial h-10 px-4 bg-amber-400 hover:bg-amber-500 text-amber-950 text-xs font-black rounded-xl transition flex items-center justify-center gap-2 shadow">
+          <i data-feather="printer" class="w-4 h-4"></i>
+          <span>Cetak Bukti</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Kontainer Form Pendaftaran -->
+  <main class="max-w-5xl mx-auto w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+    <div class="p-4 sm:p-6 bg-slate-50 border-b border-slate-200">
+      <h2 class="text-base sm:text-lg font-black text-slate-800">Formulir Pendaftaran Kontingen Lembaga</h2>
+      <p class="text-xs text-slate-500 mt-0.5">Lengkapi identitas lembaga, pilih cabang lomba, data atlet, dan unggah dokumen administrasi persyaratan.</p>
+    </div>
+
+    <form id="formPendaftaran" class="p-4 sm:p-6 space-y-6" onsubmit="handleFormSubmit(event)" novalidate>
+      
+      <!-- Asal Lembaga & Cabang Lomba -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+            Asal Lembaga / Madrasah <span class="text-red-500">*</span>
+          </label>
+          <select id="asalLembaga" onchange="handleGantiLembaga()" class="w-full h-11 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white font-medium shadow-sm transition">
+            <option value="">-- Pilih Lembaga (26 Anggota KKM 003 NGUMPOBAN) --</option>
+            <optgroup label="Kecamatan Ngunut">
+              <option value="MIN 3 Tulungagung">1. MIN 3 Tulungagung</option>
+              <option value="MI Al Ifadah Kaliwungu">2. MI Al Ifadah Kaliwungu</option>
+              <option value="MI Baiturrohman Gilang">3. MI Baiturrohman Gilang</option>
+              <option value="MI Mafatihul Ulum Balesono">4. MI Mafatihul Ulum Balesono</option>
+              <option value="MI Miftahul Huda Karangsono">5. MI Miftahul Huda Karangsono</option>
+              <option value="MI Miftahul Huda Pandansari">6. MI Miftahul Huda Pandansari</option>
+              <option value="MI Tarbiyatul Athfal Pulotondo">7. MI Tarbiyatul Athfal Pulotondo</option>
+              <option value="MI Thoriqul Huda Kromasan">8. MI Thoriqul Huda Kromasan</option>
+              <option value="MI Modern Mutiara Iman Ngunut">9. MI Modern Mutiara Iman Ngunut</option>
+              <option value="MI Nurul Iman Pulosari">10. MI Nurul Iman Pulosari</option>
+              <option value="MI Aisyiyah Ngunut">11. MI Aisyiyah Ngunut</option>
+            </optgroup>
+            <optgroup label="Kecamatan Sumbergempol">
+              <option value="MI Bendiljati Wetan">12. MI Bendiljati Wetan</option>
+              <option value="MI Darul Ulum Sambirobyong">13. MI Darul Ulum Sambirobyong</option>
+              <option value="MI Hidayatul Mubtadiin Wates">14. MI Hidayatul Mubtadiin Wates</option>
+              <option value="MI Riyadlotul Uqul Doroampel">15. MI Riyadlotul Uqul Doroampel</option>
+              <option value="MI Roudlotul Ulum Jabalsari">16. MI Roudlotul Ulum Jabalsari</option>
+              <option value="MI Nurul Islam Mirigambar">17. MI Nurul Islam Mirigambar</option>
+              <option value="MI Podorejo">18. MI Podorejo</option>
+              <option value="MI PSM Mirigambar">19. MI PSM Mirigambar</option>
+              <option value="MI Nahdlatul Ulama Terpadu Sumbergempol">20. MI Nahdlatul Ulama Terpadu Sumbergempol</option>
+              <option value="MI Al-Qur’an Jabalkat Sambijajar">21. MI Al-Qur’an Jabalkat Sambijajar</option>
+              <option value="MI Muhammadiyah Junjung">22. MI Muhammadiyah Junjung</option>
+              <option value="MI Wahid Hasyim Sambijajar">23. MI Wahid Hasyim Sambijajar</option>
+            </optgroup>
+            <optgroup label="Kecamatan Pucanglaban">
+              <option value="MI Al Hidayah Demuk">24. MI Al Hidayah Demuk</option>
+              <option value="MI Bustanuth Tholibin Sumberdadap">25. MI Bustanuth Tholibin Sumberdadap</option>
+              <option value="MI Mambaul Huda Pucanglaban">26. MI Mambaul Huda Pucanglaban</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+            Cabang Lomba yang Diikuti <span class="text-red-500">*</span>
+          </label>
+          <select id="cabangLomba" onchange="handlePilihCabang()" class="w-full h-11 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white font-medium shadow-sm transition">
+            <option value="">-- Pilih Cabang Lomba --</option>
+            <optgroup label="CABANG SENI">
+              <option value="MTQ" data-kategori="SENI" data-icon="book-open">MTQ</option>
+              <option value="Tahfidz" data-kategori="SENI" data-icon="book-open">Tahfidz</option>
+              <option value="PILDACIL Bhs. Inggris" data-kategori="SENI" data-icon="mic">PILDACIL Bhs. Inggris</option>
+              <option value="PILDACIL Bhs. Arab" data-kategori="SENI" data-icon="mic">PILDACIL Bhs. Arab</option>
+              <option value="PILDACIL Bhs. Indonesia" data-kategori="SENI" data-icon="mic">PILDACIL Bhs. Indonesia</option>
+              <option value="Kaligrafi" data-kategori="SENI" data-icon="edit-3">Kaligrafi</option>
+              <option value="Melukis" data-kategori="SENI" data-icon="image">Melukis</option>
+              <option value="Menyanyi Islami" data-kategori="SENI" data-icon="music">Menyanyi Islami</option>
+              <option value="Puisi" data-kategori="SENI" data-icon="file-text">Puisi</option>
+            </optgroup>
+            <optgroup label="CABANG OLAHRAGA">
+              <option value="Atletik - Lari" data-kategori="OLAHRAGA" data-icon="activity">Atletik (Lari)</option>
+              <option value="Atletik - Tolak Peluru" data-kategori="OLAHRAGA" data-icon="target">Atletik (Tolak Peluru)</option>
+              <option value="Atletik - Lompat Jauh" data-kategori="OLAHRAGA" data-icon="chevrons-right">Atletik (Lompat Jauh)</option>
+              <option value="Bulu Tangkis" data-kategori="OLAHRAGA" data-icon="award">Bulu Tangkis</option>
+              <option value="Tenis Meja" data-kategori="OLAHRAGA" data-icon="disc">Tenis Meja</option>
+              <option value="Catur" data-kategori="OLAHRAGA" data-icon="grid">Catur</option>
+              <option value="Voly Ball Mini" data-kategori="OLAHRAGA" data-icon="users">Voly Ball Mini (Beregu)</option>
+              <option value="Seni Pencak Silat" data-kategori="OLAHRAGA" data-icon="shield">Seni Pencak Silat</option>
+              <option value="Renang" data-kategori="OLAHRAGA" data-icon="droplet">Renang</option>
+              <option value="Futsal" data-kategori="OLAHRAGA" data-icon="users">Futsal (Beregu PA)</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Bidang</label>
+          <div id="badgeKategoriContainer" class="flex items-center gap-2.5 w-full h-11 px-3.5 border border-slate-200 bg-slate-100 rounded-xl transition">
+            <span id="badgeIcon" class="text-slate-400 flex items-center justify-center">
+              <i data-feather="tag" class="w-4 h-4"></i>
+            </span>
+            <input type="text" id="kategoriLombaText" readonly value="Pilih Cabang Lomba" class="bg-transparent border-0 p-0 text-slate-700 font-bold focus:ring-0 w-full select-none cursor-default">
+          </div>
+          <input type="hidden" id="kategoriLomba" value="">
+        </div>
+
+        <div id="genderContainer">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Golongan / Gender <span class="text-red-500">*</span></label>
+          <select id="genderLomba" class="w-full h-11 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white font-medium shadow-sm">
+            <option value="PA">Putra (PA)</option>
+            <option value="PI">Putri (PI)</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="border-slate-200">
+
+      <!-- Bagian Individu -->
+      <div id="sectionIndividu" class="space-y-4">
+        <div class="flex items-center gap-2 text-emerald-800 font-bold text-sm">
+          <span class="p-1.5 bg-emerald-100 rounded-lg text-emerald-800 flex items-center justify-center">
+            <i data-feather="user" class="w-4 h-4"></i>
+          </span>
+          <span>Biodata Peserta Individu</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <div class="sm:col-span-2 md:col-span-3">
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+              Nama Lengkap (Huruf Kapital) <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="namaPeserta" placeholder="NAMA LENGKAP PESERTA" oninput="this.value = this.value.toUpperCase(); this.classList.remove('field-error');" class="w-full h-11 px-3.5 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold tracking-wide uppercase shadow-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">NISN (10 Digit) <span class="text-red-500">*</span></label>
+            <input type="text" id="nisn" maxlength="10" placeholder="Contoh: 0123456789" oninput="this.classList.remove('field-error');" class="w-full h-11 px-3.5 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 shadow-sm font-medium">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+            <input type="date" id="tglLahir" onchange="this.classList.remove('field-error');" class="w-full h-11 px-3 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm font-medium">
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kelas (Pilihan 1 - 5) <span class="text-red-500">*</span></label>
+            <select id="kelas" onchange="this.classList.remove('field-error');" class="w-full h-11 px-3.5 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white shadow-sm font-medium">
+              <option value="">-- Pilih Kelas --</option>
+              <option value="1">Kelas 1</option>
+              <option value="2">Kelas 2</option>
+              <option value="3">Kelas 3</option>
+              <option value="4">Kelas 4</option>
+              <option value="5">Kelas 5</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100">
+          <h3 class="text-xs font-bold text-slate-600 uppercase mb-3">Dokumen Persyaratan (PDF / Foto JPG/PNG)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div id="boxFileAkta" class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-1">1. Akta Kelahiran <span class="text-red-500">*</span></label>
+              <input type="file" id="fileAkta" accept=".pdf,image/*" onchange="document.getElementById('boxFileAkta').classList.remove('field-error');" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 text-slate-500">
+            </div>
+            <div id="boxFileKK" class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-1">2. Kartu Keluarga (KK) <span class="text-red-500">*</span></label>
+              <input type="file" id="fileKK" accept=".pdf,image/*" onchange="document.getElementById('boxFileKK').classList.remove('field-error');" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 text-slate-500">
+            </div>
+            <div id="boxFileRapor" class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+              <label class="block text-xs font-bold text-slate-700 mb-1">3. Rapor Terakhir <span class="text-red-500">*</span></label>
+              <input type="file" id="fileRapor" accept=".pdf,image/*" onchange="document.getElementById('boxFileRapor').classList.remove('field-error');" class="w-full text-xs file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 text-slate-500">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bagian Beregu: Kolom Proporsional Rapi -->
+      <div id="sectionBeregu" class="hidden space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+          <div class="flex items-center gap-2 text-amber-900 font-bold text-sm">
+            <span class="p-1 bg-amber-200 rounded-md text-amber-900 flex items-center justify-center">
+              <i data-feather="users" class="w-4 h-4"></i>
+            </span>
+            <span>Input Tim Beregu (Voly Ball Mini / Futsal)</span>
+          </div>
+          <button type="button" onclick="unduhTemplateExcel()" class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow-sm transition flex items-center justify-center gap-2">
+            <i data-feather="download" class="w-4 h-4"></i>
+            <span>Unduh Template Excel</span>
+          </button>
+        </div>
+
+        <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center bg-slate-50">
+          <p class="text-xs font-bold text-slate-700 mb-2">Unggah File Excel Anggota Tim:</p>
+          <input type="file" id="excelTim" accept=".xlsx, .xls" onchange="bacaFileExcel(event)" class="text-xs file:mr-2 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-700 file:text-white hover:file:bg-emerald-800 text-slate-500">
+          <p class="text-[11px] text-slate-500 mt-2">Atau isi dan tambahkan baris pemain manual pada tabel di bawah.</p>
+        </div>
+
+        <!-- Tabel Pemain Rapi & Seimbang -->
+        <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm bg-white">
+          <table class="w-full text-left text-xs table-fixed min-w-[720px]" id="tabelPemain">
+            <colgroup>
+              <col style="width: 44px;">
+              <col style="width: 250px;">
+              <col style="width: 140px;">
+              <col style="width: 150px;">
+              <col style="width: 90px;">
+              <col style="width: 46px;">
+            </colgroup>
+            <thead class="bg-slate-100 text-slate-700 uppercase font-bold border-b border-slate-200">
+              <tr>
+                <th class="p-2.5 text-center">No</th>
+                <th class="p-2.5">Nama Lengkap (Kapital)</th>
+                <th class="p-2.5">NISN</th>
+                <th class="p-2.5">Tgl Lahir</th>
+                <th class="p-2.5 text-center">Kelas</th>
+                <th class="p-2.5 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPemain" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+
+        <button type="button" onclick="tambahBarisPemain()" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1.5 py-1">
+          <i data-feather="plus" class="w-4 h-4"></i>
+          <span>Tambah Pemain Manual</span>
+        </button>
+
+        <div id="boxFileGabungan" class="mt-4 pt-4 border-t border-slate-100">
+          <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+            Dokumen Persyaratan Tim Gabungan (Akta, KK, Rapor dijadikan 1 File PDF) <span class="text-red-500">*</span>
+          </label>
+          <input type="file" id="fileGabungan" accept=".pdf" onchange="document.getElementById('boxFileGabungan').classList.remove('field-error');" class="w-full text-xs file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 border border-slate-200 rounded-xl p-2 bg-slate-50">
+        </div>
+      </div>
+
+      <!-- Tombol Kirim -->
+      <div class="pt-3">
+        <button type="submit" id="btnSubmit" class="w-full h-12 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-black rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2">
+          <i data-feather="send" class="w-4 h-4"></i>
+          <span>Kirim Pendaftaran</span>
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <footer class="max-w-5xl mx-auto w-full py-4 text-center text-xs text-slate-500 border-t border-slate-200">
+    <p>&copy; 2026 Panitia Pelaksana PORSENI KKM 003 NGUMPOBAN • Tulungagung</p>
+  </footer>
+
+  <!-- Modal Notifikasi Modern -->
+  <div id="modalNotif" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 hidden no-print">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-5 border border-slate-100 text-center">
+      <div id="notifIconWrapper" class="w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-amber-100 text-amber-600">
+        <i id="notifIcon" data-feather="alert-triangle" class="w-6 h-6"></i>
+      </div>
+      <h3 id="notifJudul" class="font-black text-slate-800 text-base mb-1">Peringatan</h3>
+      <p id="notifPesan" class="text-xs text-slate-600 leading-relaxed mb-5"></p>
+      <button type="button" onclick="tutupNotifikasi()" class="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white text-xs font-bold rounded-xl transition">
+        Mengerti
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Pencarian & Bukti Cetak -->
+  <div id="modalCariBukti" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden no-print">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-5 sm:p-6 border border-slate-100">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-black text-slate-800 text-base">Cetak Bukti Pendaftaran</h3>
+        <button type="button" onclick="tutupModalCariBukti()" class="text-slate-400 hover:text-slate-600 text-xl font-bold p-1">
+          <i data-feather="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3.5">Cari berdasarkan <strong>No. Registrasi</strong>, <strong>NISN</strong>, atau <strong>Nama Peserta</strong>:</p>
+      
+      <div class="flex gap-2 mb-2">
+        <input type="text" id="inputKodeCari" onkeypress="if(event.key === 'Enter') eksekusiCariBukti()" placeholder="REG-2026... / NISN / NAMA" class="flex-1 h-11 px-3 text-xs border border-slate-300 rounded-xl uppercase font-bold focus:ring-2 focus:ring-emerald-500">
+        <button type="button" id="btnProsesCari" onclick="eksekusiCariBukti()" class="h-11 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black px-4 rounded-xl transition flex items-center gap-1.5">
+          <i data-feather="search" class="w-4 h-4"></i>
+          <span>Cari</span>
+        </button>
+      </div>
+      <span id="pesanLoadingCari" class="text-[11px] text-emerald-600 font-semibold hidden">Menghubungi server database...</span>
+    </div>
+  </div>
+
+  <!-- Modal Siap Cetak (KOP CENTER SIMETRIS) -->
+  <div id="modalBuktiSiapCetak" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+    <div class="bg-white w-full max-w-2xl max-h-[94vh] rounded-2xl shadow-2xl p-5 sm:p-7 overflow-y-auto" id="printableArea">
+      
+      <div class="border-b-2 border-slate-800 pb-3 mb-4 text-center">
+        <div class="flex justify-center mb-2">
+          <img 
+            src="https://lh3.googleusercontent.com/d/1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp" 
+            alt="Logo Kemenag" 
+            class="h-20 w-auto object-contain drop-shadow-sm"
+          />
+        </div>
+        <h2 class="text-xs font-bold tracking-widest uppercase text-slate-700">PANITIA PELAKSANA PORSENI KKM 003</h2>
+        <h1 class="text-lg sm:text-xl font-black uppercase text-slate-900 mt-0.5">BUKTI PENDAFTARAN RESMI</h1>
+        <p class="text-[11px] text-slate-500 mt-0.5">Wilayah Kerja: Kec. Ngunut • Kec. Sumbergempol • Kec. Pucanglaban</p>
+      </div>
+
+      <div id="rincianBuktiCetak" class="space-y-3 text-xs"></div>
+
+      <div class="mt-8 flex justify-between items-end text-xs pt-4 border-t border-slate-200">
+        <div class="text-slate-500 text-[10px] leading-relaxed">
+          Dicetak otomatis oleh Sistem Pendaftaran PORSENI KKM 003.<br>
+          Tunjukkan lembar ini saat proses verifikasi berkas dan penimbangan fisik atlet.
+        </div>
+        <div class="text-center w-36 sm:w-44">
+          <p class="text-[10px] text-slate-500 mb-12">Panitia Verifikator,</p>
+          <div class="border-b border-slate-500 w-full"></div>
+          <p class="text-[10px] text-slate-400 mt-1">(Tanda Tangan & Stempel)</p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-2.5 no-print">
+        <button type="button" onclick="document.getElementById('modalBuktiSiapCetak').classList.add('hidden')" class="px-4 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold rounded-xl transition">Tutup</button>
+        <button type="button" onclick="window.print()" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black rounded-xl shadow transition flex items-center gap-1.5">
+          <i data-feather="printer" class="w-4 h-4"></i>
+          <span>Cetak / Simpan PDF</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Rekap Sementara -->
+  <div id="modalRekap" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4 hidden">
+    <div class="bg-white w-full max-w-5xl max-h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+      <div class="p-3.5 sm:p-4 bg-emerald-900 text-white flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://lh3.googleusercontent.com/d/1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp" 
+            alt="Logo" 
+            class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-md"
+          />
+          <div>
+            <h3 class="font-black text-sm sm:text-base leading-tight">Rekapitulasi Peserta PORSENI</h3>
+            <p class="text-[10px] sm:text-xs text-emerald-200">Urutan Prioritas: Cabang Seni ➔ Cabang Olahraga</p>
+          </div>
+        </div>
+        <button type="button" onclick="tutupModalRekap()" class="text-white hover:text-red-200 text-xl font-bold p-1">
+          <i data-feather="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <div class="p-3 border-b border-slate-200 bg-slate-50 shrink-0">
+        <input type="text" id="cariRekap" oninput="filterTabelRekap()" placeholder="Cari nama lembaga madrasah atau nama siswa..." class="w-full h-10 px-3.5 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white">
+      </div>
+
+      <div class="p-3 sm:p-4 overflow-y-auto flex-1 space-y-4" id="kontenRekap">
+        <div class="text-center py-10 text-slate-400 text-xs font-semibold">Memuat data rekapitulasi...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Script Logika Frontend -->
+  <script>
+    // =========================================================================
+    // MASUKKAN URL WEB APP APPS SCRIPT ANDA DI SINI:
+    // =========================================================================
+    const API_URL = "MASUKKAN_URL_WEB_APP_EXEC_DISINI";
+
+    function refreshIcons() {
+      if (window.feather) {
+        feather.replace();
+      }
+    }
+
+    let elemenFokusTertunda = null;
+    function tampilkanNotifikasi(pesan, judul = "Peringatan", tipe = "warning", targetEl = null) {
+      elemenFokusTertunda = targetEl;
+      const modal = document.getElementById('modalNotif');
+      const iconWrapper = document.getElementById('notifIconWrapper');
+      const icon = document.getElementById('notifIcon');
+      const judulEl = document.getElementById('notifJudul');
+      const pesanEl = document.getElementById('notifPesan');
+
+      judulEl.textContent = judul;
+      pesanEl.textContent = pesan;
+
+      if (tipe === "success") {
+        iconWrapper.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-emerald-100 text-emerald-600";
+        icon.setAttribute("data-feather", "check-circle");
+      } else if (tipe === "error") {
+        iconWrapper.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-rose-100 text-rose-600";
+        icon.setAttribute("data-feather", "alert-circle");
+      } else {
+        iconWrapper.className = "w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 bg-amber-100 text-amber-600";
+        icon.setAttribute("data-feather", "alert-triangle");
+      }
+
+      modal.classList.remove('hidden');
+      refreshIcons();
+    }
+
+    function tutupNotifikasi() {
+      document.getElementById('modalNotif').classList.add('hidden');
+      if (elemenFokusTertunda) {
+        elemenFokusTertunda.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (elemenFokusTertunda.focus) elemenFokusTertunda.focus();
+        elemenFokusTertunda = null;
+      }
+    }
+
+    function handleGantiLembaga() {
+      clearErrors();
+      resetDataBeregu();
+    }
+
+    function resetDataBeregu() {
+      const tbody = document.getElementById('tbodyPemain');
+      if (tbody) tbody.innerHTML = "";
+      const excelInput = document.getElementById('excelTim');
+      if (excelInput) excelInput.value = "";
+      const fileGabungan = document.getElementById('fileGabungan');
+      if (fileGabungan) fileGabungan.value = "";
+      
+      const cabang = document.getElementById('cabangLomba').value;
+      if (cabang === 'Voly Ball Mini' || cabang === 'Futsal') {
+        tambahBarisPemain();
+      }
+    }
+
+    function handlePilihCabang() {
+      clearErrors();
+      const cabangSelect = document.getElementById('cabangLomba');
+      const opt = cabangSelect.options[cabangSelect.selectedIndex];
+      const cabang = cabangSelect.value;
+      const kategori = opt ? opt.getAttribute('data-kategori') : '';
+      const iconName = opt ? opt.getAttribute('data-icon') : 'tag';
+
+      document.getElementById('kategoriLomba').value = kategori || '';
+      
+      const badgeContainer = document.getElementById('badgeKategoriContainer');
+      const badgeIcon = document.getElementById('badgeIcon');
+      const kategoriText = document.getElementById('kategoriLombaText');
+
+      if (kategori === 'SENI') {
+        kategoriText.value = 'CABANG SENI';
+        badgeContainer.className = "flex items-center gap-2.5 w-full h-11 px-3.5 border border-purple-200 bg-purple-50 text-purple-700 rounded-xl transition";
+        badgeIcon.innerHTML = `<i data-feather="${iconName || 'feather'}" class="w-4 h-4 text-purple-600"></i>`;
+      } else if (kategori === 'OLAHRAGA') {
+        kategoriText.value = 'CABANG OLAHRAGA';
+        badgeContainer.className = "flex items-center gap-2.5 w-full h-11 px-3.5 border border-emerald-200 bg-emerald-50 text-emerald-700 rounded-xl transition";
+        badgeIcon.innerHTML = `<i data-feather="${iconName || 'activity'}" class="w-4 h-4 text-emerald-600"></i>`;
+      } else {
+        kategoriText.value = 'Pilih Cabang Lomba';
+        badgeContainer.className = "flex items-center gap-2.5 w-full h-11 px-3.5 border border-slate-200 bg-slate-100 text-slate-700 rounded-xl transition";
+        badgeIcon.innerHTML = `<i data-feather="tag" class="w-4 h-4 text-slate-400"></i>`;
+      }
+
+      const genderSelect = document.getElementById('genderLomba');
+      const isBeregu = (cabang === 'Voly Ball Mini' || cabang === 'Futsal');
+
+      if (cabang === 'Futsal') {
+        genderSelect.innerHTML = '<option value="PA">Putra (PA) - Khusus Putra</option>';
+        genderSelect.value = 'PA';
+      } else {
+        genderSelect.innerHTML = '<option value="PA">Putra (PA)</option><option value="PI">Putri (PI)</option>';
+      }
+
+      if (isBeregu) {
+        document.getElementById('sectionIndividu').classList.add('hidden');
+        document.getElementById('sectionBeregu').classList.remove('hidden');
+        if (document.getElementById('tbodyPemain').children.length === 0) {
+          tambahBarisPemain();
+        }
+      } else {
+        document.getElementById('sectionIndividu').classList.remove('hidden');
+        document.getElementById('sectionBeregu').classList.add('hidden');
+      }
+      refreshIcons();
+    }
+
+    function tambahBarisPemain(nama = "", nisn = "", tgl = "", kls = "3") {
+      const tbody = document.getElementById('tbodyPemain');
+      const rowIdx = tbody.children.length + 1;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="p-2 text-center font-bold text-slate-400 no-idx">${rowIdx}</td>
+        <td class="p-1.5"><input type="text" value="${nama}" placeholder="NAMA LENGKAP" oninput="this.value = this.value.toUpperCase(); this.classList.remove('field-error');" class="input-nama-tim w-full h-10 px-2.5 border border-slate-300 rounded-lg font-bold text-xs uppercase focus:ring-2 focus:ring-emerald-500 bg-white" required></td>
+        <td class="p-1.5"><input type="text" value="${nisn}" maxlength="10" placeholder="NISN" oninput="this.classList.remove('field-error')" class="input-nisn-tim w-full h-10 px-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 bg-white" required></td>
+        <td class="p-1.5"><input type="date" value="${tgl}" onchange="this.classList.remove('field-error')" class="input-tgl-tim w-full h-10 px-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 bg-white" required></td>
+        <td class="p-1.5 text-center">
+          <select onchange="this.classList.remove('field-error')" class="select-kls-tim w-full h-10 px-1 border border-slate-300 rounded-lg text-xs text-center bg-white font-medium focus:ring-2 focus:ring-emerald-500">
+            <option value="1" ${kls==='1'?'selected':''}>1</option>
+            <option value="2" ${kls==='2'?'selected':''}>2</option>
+            <option value="3" ${kls==='3'?'selected':''}>3</option>
+            <option value="4" ${kls==='4'?'selected':''}>4</option>
+            <option value="5" ${kls==='5'?'selected':''}>5</option>
+          </select>
+        </td>
+        <td class="p-1.5 text-center">
+          <button type="button" onclick="hapusBarisPemain(this)" class="text-red-500 hover:text-red-700 font-bold p-1 inline-flex items-center justify-center">
+            <i data-feather="x" class="w-4 h-4"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+      refreshIcons();
+    }
+
+    function hapusBarisPemain(btn) {
+      const tbody = document.getElementById('tbodyPemain');
+      if (tbody.children.length > 1) {
+        btn.closest('tr').remove();
+        Array.from(tbody.children).forEach((tr, i) => {
+          tr.querySelector('.no-idx').textContent = i + 1;
+        });
+      }
+    }
+
+    function unduhTemplateExcel() {
+      const data = [
+        ["NO", "NAMA LENGKAP (KAPITAL)", "NISN", "TANGGAL LAHIR (YYYY-MM-DD)", "KELAS (1-5)"],
+        [1, "AHMAD FAUZI", "0123456789", "2015-05-12", 4],
+        [2, "MUHAMMAD RIZKY", "0123456790", "2015-08-20", 4]
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "DATA_TIM");
+      XLSX.writeFile(wb, "Template_Pemain_PORSENI_KKM003.xlsx");
+    }
+
+    function bacaFileExcel(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, {type: 'array'});
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, {header: 1});
+
+        const tbody = document.getElementById('tbodyPemain');
+        tbody.innerHTML = "";
+
+        for (let i = 1; i < rows.length; i++) {
+          const r = rows[i];
+          if (r && r[1]) {
+            const nama = (r[1] || "").toString().toUpperCase();
+            const nisn = (r[2] || "").toString();
+            let tgl = (r[3] || "").toString();
+            const kls = (r[4] || "4").toString();
+            tambahBarisPemain(nama, nisn, tgl, kls);
+          }
+        }
+        refreshIcons();
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function processFile(file) {
+      if (!file) return null;
+      if (file.type.startsWith('image/')) {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+              const canvas = document.createElement('canvas');
+              let width = img.width;
+              let height = img.height;
+              const maxDim = 1200;
+              if (width > maxDim || height > maxDim) {
+                if (width > height) {
+                  height = Math.round((height * maxDim) / width);
+                  width = maxDim;
+                } else {
+                  width = Math.round((width * maxDim) / height);
+                  height = maxDim;
+                }
+              }
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve({
+                fileName: file.name.replace(/\.[^/.]+$/, "") + ".jpg",
+                mimeType: "image/jpeg",
+                base64: canvas.toDataURL('image/jpeg', 0.72)
+              });
+            };
+            img.onerror = () => resolve({ fileName: file.name, mimeType: file.type, base64: e.target.result });
+            img.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        });
+      } else {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({
+            fileName: file.name,
+            mimeType: file.type || 'application/pdf',
+            base64: reader.result
+          });
+          reader.readAsDataURL(file);
+        });
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+    }
+
+    function triggerError(element, pesan) {
+      clearErrors();
+      element.classList.add('field-error');
+      tampilkanNotifikasi(pesan, "Formulir Belum Lengkap", "warning", element);
+      return false;
+    }
+
+    function validasiKelengkapanForm() {
+      clearErrors();
+
+      const asalLembaga = document.getElementById('asalLembaga');
+      if (!asalLembaga.value) return triggerError(asalLembaga, "Harap pilih Asal Lembaga / Madrasah terlebih dahulu!");
+
+      const cabangLomba = document.getElementById('cabangLomba');
+      if (!cabangLomba.value) return triggerError(cabangLomba, "Harap tentukan Cabang Lomba yang akan diikuti!");
+
+      const cabang = cabangLomba.value;
+      const isBeregu = (cabang === 'Voly Ball Mini' || cabang === 'Futsal');
+
+      if (!isBeregu) {
+        const nama = document.getElementById('namaPeserta');
+        if (!nama.value.trim()) return triggerError(nama, "Harap isi Nama Lengkap Peserta!");
+
+        const nisn = document.getElementById('nisn');
+        if (!nisn.value.trim()) return triggerError(nisn, "Harap masukkan NISN Peserta!");
+
+        const tgl = document.getElementById('tglLahir');
+        if (!tgl.value) return triggerError(tgl, "Harap tentukan Tanggal Lahir Peserta!");
+
+        const kelas = document.getElementById('kelas');
+        if (!kelas.value) return triggerError(kelas, "Harap pilih Kelas Peserta!");
+
+        const fAkta = document.getElementById('fileAkta');
+        if (!fAkta.files || fAkta.files.length === 0) return triggerError(document.getElementById('boxFileAkta'), "Harap unggah berkas Akta Kelahiran!");
+
+        const fKK = document.getElementById('fileKK');
+        if (!fKK.files || fKK.files.length === 0) return triggerError(document.getElementById('boxFileKK'), "Harap unggah berkas Kartu Keluarga (KK)!");
+
+        const fRapor = document.getElementById('fileRapor');
+        if (!fRapor.files || fRapor.files.length === 0) return triggerError(document.getElementById('boxFileRapor'), "Harap unggah berkas Rapor Terakhir!");
+
+      } else {
+        const rows = document.querySelectorAll('#tbodyPemain tr');
+        if (rows.length === 0) return triggerError(document.getElementById('tabelPemain'), "Daftar susunan pemain tim beregu masih kosong!");
+
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          const inputNama = row.querySelector('.input-nama-tim');
+          const inputNisn = row.querySelector('.input-nisn-tim');
+          const inputTgl = row.querySelector('.input-tgl-tim');
+
+          if (!inputNama.value.trim()) return triggerError(inputNama, `Nama pemain pada baris ke-${i + 1} belum diisi!`);
+          if (!inputNisn.value.trim()) return triggerError(inputNisn, `NISN pemain pada baris ke-${i + 1} belum diisi!`);
+          if (!inputTgl.value) return triggerError(inputTgl, `Tanggal lahir pemain pada baris ke-${i + 1} belum diisi!`);
+        }
+
+        const fGabungan = document.getElementById('fileGabungan');
+        if (!fGabungan.files || fGabungan.files.length === 0) return triggerError(document.getElementById('boxFileGabungan'), "Harap unggah 1 berkas gabungan persyaratan tim (PDF)!");
+      }
+
+      return true;
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      if (!validasiKelengkapanForm()) {
+        return;
+      }
+
+      if (!API_URL || API_URL.includes("MASUKKAN_URL")) {
+        tampilkanNotifikasi("Harap masukkan URL Web App Apps Script Anda pada variabel API_URL!", "Konfigurasi Diperlukan", "error");
+        return;
+      }
+
+      const btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span><span>Mengunggah berkas & memproses data...</span>';
+
+      try {
+        const cabang = document.getElementById('cabangLomba').value;
+        const isBeregu = (cabang === 'Voly Ball Mini' || cabang === 'Futsal');
+        const tipeLomba = isBeregu ? 'BEREGU' : 'INDIVIDU';
+
+        const payload = {
+          asalLembaga: document.getElementById('asalLembaga').value,
+          kategori: document.getElementById('kategoriLomba').value,
+          cabangLomba: cabang,
+          gender: document.getElementById('genderLomba').value,
+          tipeLomba: tipeLomba
+        };
+
+        if (!isBeregu) {
+          payload.namaPeserta = document.getElementById('namaPeserta').value;
+          payload.nisn = document.getElementById('nisn').value;
+          payload.tglLahir = document.getElementById('tglLahir').value;
+          payload.kelas = document.getElementById('kelas').value;
+
+          payload.fileAkta = await processFile(document.getElementById('fileAkta').files[0]);
+          payload.fileKK = await processFile(document.getElementById('fileKK').files[0]);
+          payload.fileRapor = await processFile(document.getElementById('fileRapor').files[0]);
+        } else {
+          const rows = document.querySelectorAll('#tbodyPemain tr');
+          const tim = [];
+          rows.forEach(tr => {
+            tim.push({
+              nama: tr.querySelector('.input-nama-tim').value,
+              nisn: tr.querySelector('.input-nisn-tim').value,
+              tglLahir: tr.querySelector('.input-tgl-tim').value,
+              kelas: tr.querySelector('.select-kls-tim').value
+            });
+          });
+          payload.anggotaTim = tim;
+          payload.fileGabungan = await processFile(document.getElementById('fileGabungan').files[0]);
+        }
+
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const res = await response.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i data-feather="send" class="w-4 h-4"></i><span>Kirim Pendaftaran</span>';
+        refreshIcons();
+
+        if (res.status === 'SUCCESS') {
+          tampilkanNotifikasi("Alhamdulillah! " + res.message + "\nNo. Registrasi: " + res.noRegistrasi, "Pendaftaran Berhasil", "success");
+          document.getElementById('formPendaftaran').reset();
+          resetDataBeregu();
+          handlePilihCabang();
+          tampilkanBuktiCetak(res.noRegistrasi);
+        } else {
+          tampilkanNotifikasi("Gagal: " + res.message, "Gagal Menyimpan", "error");
+        }
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i data-feather="send" class="w-4 h-4"></i><span>Kirim Pendaftaran</span>';
+        refreshIcons();
+        tampilkanNotifikasi("Terjadi gangguan jaringan: " + err.message, "Kesalahan Koneksi", "error");
+      }
+    }
+
+    function bukaModalCariBukti() {
+      document.getElementById('modalCariBukti').classList.remove('hidden');
+      document.getElementById('inputKodeCari').focus();
+      refreshIcons();
+    }
+    function tutupModalCariBukti() {
+      document.getElementById('modalCariBukti').classList.add('hidden');
+      document.getElementById('pesanLoadingCari').classList.add('hidden');
+    }
+
+    function eksekusiCariBukti() {
+      const kw = document.getElementById('inputKodeCari').value.trim();
+      if (!kw) return tampilkanNotifikasi("Ketikkan No. Registrasi, NISN, atau Nama Peserta!", "Pencarian Kosong", "warning");
+
+      const loader = document.getElementById('pesanLoadingCari');
+      const btn = document.getElementById('btnProsesCari');
+      loader.classList.remove('hidden');
+      btn.disabled = true;
+
+      tampilkanBuktiCetak(kw, function() {
+        loader.classList.add('hidden');
+        btn.disabled = false;
+      });
+    }
+
+    async function tampilkanBuktiCetak(keyword, callbackFinish) {
+      try {
+        const url = API_URL + "?action=cariBukti&keyword=" + encodeURIComponent(keyword);
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (callbackFinish) callbackFinish();
+        if (!data || data.status !== 'SUCCESS') {
+          return tampilkanNotifikasi("Data tidak ditemukan! Pastikan kata kunci No. Registrasi, NISN, atau Nama sudah benar.", "Tidak Ditemukan", "error");
+        }
+
+        tutupModalCariBukti();
+
+        let listPesertaHtml = "";
+        data.peserta.forEach((p, i) => {
+          listPesertaHtml += `
+            <tr class="border-b border-slate-200">
+              <td class="p-2 text-center text-slate-500">${i + 1}</td>
+              <td class="p-2 font-black uppercase text-slate-800">${p.nama}</td>
+              <td class="p-2 font-mono">${p.nisn}</td>
+              <td class="p-2">${p.tglLahir}</td>
+              <td class="p-2 text-center font-bold">Kelas ${p.kelas}</td>
+            </tr>
+          `;
+        });
+
+        let berkasHtml = "";
+        if (data.tipeLomba === 'INDIVIDU') {
+          berkasHtml = `
+            <div class="flex flex-wrap gap-2 text-[11px] pt-1">
+              ${data.urlAkta ? `<a href="${data.urlAkta}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Akta Kelahiran</a>` : '<span class="text-slate-400">Akta: -</span>'}
+              ${data.urlKK ? `<a href="${data.urlKK}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Kartu Keluarga</a>` : '<span class="text-slate-400">KK: -</span>'}
+              ${data.urlRapor ? `<a href="${data.urlRapor}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Rapor Terakhir</a>` : '<span class="text-slate-400">Rapor: -</span>'}
+            </div>
+          `;
+        } else {
+          berkasHtml = `
+            <div class="text-[11px] pt-1">
+              ${data.urlGabungan ? `<a href="${data.urlGabungan}" target="_blank" class="text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 hover:underline font-black inline-flex items-center gap-1.5"><i data-feather="file-text" class="w-4 h-4"></i>Berkas Gabungan Tim (PDF)</a>` : '<span class="text-slate-400">Berkas Tim: -</span>'}
+            </div>
+          `;
+        }
+
+        const html = `
+          <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 mb-3 text-xs">
+            <div><span class="text-slate-500">No. Registrasi:</span> <div class="text-emerald-800 font-mono font-black text-sm">${data.noRegistrasi}</div></div>
+            <div><span class="text-slate-500">Tanggal Daftar:</span> <div class="font-bold">${data.timestamp}</div></div>
+            <div><span class="text-slate-500">Asal Madrasah:</span> <div class="font-bold uppercase text-slate-800">${data.lembaga}</div></div>
+            <div><span class="text-slate-500">Cabang Lomba:</span> <div class="font-bold text-slate-800">${data.cabangLomba} (${data.gender})</div></div>
+          </div>
+
+          <div class="mb-3">
+            <span class="text-slate-500 text-[11px] font-bold uppercase block mb-1">Tautan Dokumen Persyaratan:</span>
+            ${berkasHtml}
+          </div>
+
+          <h4 class="font-black text-slate-700 text-xs uppercase mb-1">Daftar Atlet Terdaftar:</h4>
+          <table class="w-full text-left text-xs border border-slate-200 mb-2">
+            <thead class="bg-slate-100 font-bold border-b border-slate-200 text-slate-700">
+              <tr>
+                <th class="p-2 w-8 text-center">No</th>
+                <th class="p-2">Nama Peserta</th>
+                <th class="p-2">NISN</th>
+                <th class="p-2">Tgl Lahir</th>
+                <th class="p-2 text-center">Kelas</th>
+              </tr>
+            </thead>
+            <tbody>${listPesertaHtml}</tbody>
+          </table>
+        `;
+
+        document.getElementById('rincianBuktiCetak').innerHTML = html;
+        document.getElementById('modalBuktiSiapCetak').classList.remove('hidden');
+        refreshIcons();
+      } catch (err) {
+        if (callbackFinish) callbackFinish();
+        tampilkanNotifikasi("Gagal memuat bukti pendaftaran: " + err.message, "Kesalahan", "error");
+      }
+    }
+
+    async function bukaModalRekap() {
+      document.getElementById('modalRekap').classList.remove('hidden');
+      const container = document.getElementById('kontenRekap');
+      container.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs font-semibold">Mengambil data rekapitulasi...</div>';
+      refreshIcons();
+
+      try {
+        const url = API_URL + "?action=getRekap";
+        const response = await fetch(url);
+        const grouped = await response.json();
+        renderRekap(grouped);
+      } catch (err) {
+        container.innerHTML = '<div class="text-center py-10 text-red-500 text-xs font-semibold">Gagal memuat rekap data: ' + err.message + '</div>';
+      }
+    }
+
+    function tutupModalRekap() {
+      document.getElementById('modalRekap').classList.add('hidden');
+    }
+
+    function renderRekap(grouped) {
+      const container = document.getElementById('kontenRekap');
+      container.innerHTML = "";
+      const lembagaKeys = Object.keys(grouped || {});
+
+      if (lembagaKeys.length === 0) {
+        container.innerHTML = '<div class="text-center py-10 text-slate-400 text-xs font-semibold">Belum ada peserta yang mendaftar di database.</div>';
+        return;
+      }
+
+      lembagaKeys.forEach(lem => {
+        const card = document.createElement('div');
+        card.className = "bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm item-lembaga";
+
+        let rowsHtml = "";
+        grouped[lem].forEach((p, idx) => {
+          const badgeKat = p.kategori === 'SENI' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
+          const linkBerkas = p.urlGabungan || p.urlAkta || p.urlKK || p.urlRapor;
+          rowsHtml += `
+            <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
+              <td class="p-2.5 text-center text-slate-400 font-bold">${idx + 1}</td>
+              <td class="p-2.5 font-bold text-slate-800 truncate" title="${p.nama}">${p.nama}</td>
+              <td class="p-2.5 text-slate-700 truncate" title="${p.cabang} (${p.gender})">${p.cabang} (${p.gender})</td>
+              <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeKat}">${p.kategori}</span></td>
+              <td class="p-2.5 text-center text-slate-600 font-mono text-xs">${p.nisn}</td>
+              <td class="p-2.5 text-center font-bold text-slate-700">${p.kelas}</td>
+              <td class="p-2.5 text-center">
+                ${linkBerkas ? `<a href="${linkBerkas}" target="_blank" class="text-emerald-700 hover:text-emerald-900 font-bold text-xs inline-flex items-center gap-1">Buka <i data-feather="external-link" class="w-3 h-3"></i></a>` : '<span class="text-slate-300">-</span>'}
+              </td>
+            </tr>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="bg-slate-800 text-white px-3.5 py-2.5 flex justify-between items-center">
+            <span class="font-bold text-xs uppercase tracking-wider truncate mr-2">🏫 ${lem}</span>
+            <span class="text-xs bg-emerald-600 px-2.5 py-0.5 rounded-full font-bold shrink-0">${grouped[lem].length} Atlet</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs table-fixed min-w-[700px]">
+              <colgroup>
+                <col style="width: 44px;">
+                <col style="width: 220px;">
+                <col style="width: 190px;">
+                <col style="width: 95px;">
+                <col style="width: 105px;">
+                <col style="width: 55px;">
+                <col style="width: 75px;">
+              </colgroup>
+              <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
+                <tr>
+                  <th class="p-2.5 text-center">No</th>
+                  <th class="p-2.5">Nama Peserta</th>
+                  <th class="p-2.5">Cabang Lomba</th>
+                  <th class="p-2.5 text-center">Kategori</th>
+                  <th class="p-2.5 text-center">NISN</th>
+                  <th class="p-2.5 text-center">Kelas</th>
+                  <th class="p-2.5 text-center">Berkas</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">${rowsHtml}</tbody>
+            </table>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      refreshIcons();
+    }
+
+    function filterTabelRekap() {
+      const q = document.getElementById('cariRekap').value.toUpperCase();
+      const cards = document.querySelectorAll('.item-lembaga');
+      cards.forEach(c => {
+        const txt = c.textContent.toUpperCase();
+        c.style.display = txt.includes(q) ? "" : "none";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      refreshIcons();
+    });
+    setTimeout(refreshIcons, 400);
+  </script>
+</body>
+</html>
