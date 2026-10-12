@@ -54,28 +54,28 @@
 <body class="bg-slate-100 text-slate-800 min-h-screen antialiased flex flex-col justify-between p-2 sm:p-4">
 
   <!-- Banner Header Responsif -->
-  <header class="max-w-5xl mx-auto w-full bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-800 text-white rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-emerald-700/50">
+  <header class="max-w-5xl mx-auto w-full bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-800 text-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 border border-emerald-700/50">
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
       
-      <!-- Logo, Identitas & Widget Waktu yang Jelas & Kontras -->
-      <div class="flex items-center gap-4 w-full md:w-auto">
+      <!-- Logo Kemenag Lebih Besar & Sejajar Presisi dengan Teks -->
+      <div class="flex items-center gap-4 sm:gap-5 w-full md:w-auto">
         <img 
           src="https://lh3.googleusercontent.com/d/1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp" 
           alt="Logo Kemenag" 
-          class="h-16 sm:h-20 w-auto object-contain shrink-0 drop-shadow select-none"
+          class="h-20 sm:h-24 md:h-28 w-auto object-contain shrink-0 drop-shadow-md select-none"
           onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1fIvbM2yPwIZJ9boqYfFAGuJDaekQfsBp&sz=w400';"
         />
-        <div>
+        <div class="flex flex-col justify-center">
           <div class="flex flex-wrap items-center gap-2">
             <span class="bg-emerald-950/70 text-emerald-300 text-[10px] sm:text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider border border-emerald-500/30">KKM 003 NGUMPOBAN</span>
-            <!-- Widget Tanggal & Jam dengan Warna Terang Kontras -->
+            <!-- Widget Tanggal & Jam Digital Kontras -->
             <span id="liveClockWidget" class="bg-white text-emerald-900 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 shadow-sm">
               <i data-feather="clock" class="w-3.5 h-3.5 text-emerald-700"></i>
               <span id="liveClockText">Memuat waktu...</span>
             </span>
           </div>
-          <h1 class="text-lg sm:text-2xl font-black tracking-tight mt-1 leading-snug">Pendaftaran PORSENI 2026</h1>
-          <p class="text-xs text-emerald-100/90 leading-tight">Ngunut • Sumbergempol • Pucanglaban</p>
+          <h1 class="text-xl sm:text-2xl md:text-3xl font-black tracking-tight mt-1.5 leading-snug">Pendaftaran PORSENI 2026</h1>
+          <p class="text-xs sm:text-sm text-emerald-100/90 leading-tight">Ngunut • Sumbergempol • Pucanglaban</p>
         </div>
       </div>
 
@@ -93,6 +93,25 @@
 
     </div>
   </header>
+
+  <!-- Kotak Perhatian dengan Warna Kontras Tinggi -->
+  <section class="max-w-5xl mx-auto w-full mb-6 bg-gradient-to-r from-amber-50 via-amber-100/70 to-yellow-50 border-2 border-amber-400 rounded-2xl p-4 sm:p-5 shadow-sm">
+    <div class="flex items-start gap-3.5">
+      <div class="p-2.5 bg-amber-500 text-amber-950 rounded-xl shrink-0 mt-0.5 shadow-sm flex items-center justify-center">
+        <i data-feather="alert-circle" class="w-5 h-5 stroke-[2.5]"></i>
+      </div>
+      <div class="space-y-1.5 w-full">
+        <h3 class="text-xs sm:text-sm font-black text-amber-950 tracking-wider uppercase flex items-center gap-1.5">
+          PERHATIKAN:
+        </h3>
+        <ol class="list-decimal list-outside ml-4 sm:ml-5 text-xs sm:text-sm font-bold text-amber-950 space-y-1 leading-relaxed">
+          <li>Penulisan nama menggunakan nama lengkap sesuai dengan akta/ KK ditulis dengan huruf Kapital,</li>
+          <li>Pastikan data real sesuai dengan data peserta,</li>
+          <li>Pastikan peserta yang didaftarkan sesuai dengan cabang lomba yang diikuti.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
 
   <!-- Kontainer Form Pendaftaran -->
   <main class="max-w-5xl mx-auto w-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
@@ -178,6 +197,7 @@
           </select>
         </div>
 
+        <!-- Kolom Kategori Bidang Dinamis Tanpa Kode Angka Rusak -->
         <div>
           <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori Bidang</label>
           <div id="badgeKategoriContainer" class="flex items-center gap-2.5 w-full h-11 px-3.5 border border-slate-200 bg-slate-100 rounded-xl transition">
@@ -680,7 +700,6 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // Kompresi Kanvas Otomatis Sisi Klien (~150KB, Bebas Crash Apps Script)
     async function processFile(file) {
       if (!file) return null;
       if (file.type.startsWith('image/')) {
