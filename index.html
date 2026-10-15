@@ -34,6 +34,13 @@
       border-color: #ef4444 !important;
       box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.3) !important;
     }
+    /* Efek Bayangan Putih Bersinar untuk Logo */
+    .logo-white-shadow {
+      filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.85)) drop-shadow(0 0 4px rgba(255, 255, 255, 0.95));
+    }
+    .logo-white-shadow-sm {
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
+    }
     @media print {
       body * { visibility: hidden !important; }
       #printableArea, #printableArea * { visibility: visible !important; }
@@ -57,12 +64,12 @@
   <header class="max-w-5xl mx-auto w-full bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-800 text-white rounded-2xl shadow-lg p-4 sm:p-6 mb-4 border border-emerald-700/50">
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
       
-      <!-- Logo PORSENI Baru Lebih Besar & Sejajar Presisi dengan Teks -->
+      <!-- Logo Baru dengan Efek Shadow Putih Bersinar -->
       <div class="flex items-center gap-4 sm:gap-5 w-full md:w-auto">
         <img 
           src="https://lh3.googleusercontent.com/d/1BpbeBWygHQpM93U7ih3zqezW35kps9VQ" 
           alt="Logo PORSENI" 
-          class="h-20 sm:h-24 md:h-28 w-auto object-contain shrink-0 drop-shadow-md select-none"
+          class="h-20 sm:h-24 md:h-28 w-auto object-contain shrink-0 select-none logo-white-shadow transition-transform hover:scale-105 duration-300"
           onerror="this.onerror=null; this.src='https://drive.google.com/thumbnail?id=1BpbeBWygHQpM93U7ih3zqezW35kps9VQ&sz=w400';"
         />
         <div class="flex flex-col justify-center">
@@ -108,7 +115,7 @@
           <li>Penulisan nama menggunakan nama lengkap sesuai dengan akta/ KK ditulis dengan huruf Kapital,</li>
           <li>Pastikan dokumen real sesuai dengan data peserta,</li>
           <li>Pastikan peserta yang didaftarkan sesuai dengan cabang lomba yang diikuti,</li>
-          <li>Pengumpulan Musik untuk cabang lomba Menyanyi Islami dengan format .MP3.</li>
+          <li>Pengiriman file Musik untuk cabang Menyanyi Islami dengan format .MP3.</li>
         </ol>
       </div>
     </div>
@@ -393,7 +400,7 @@
   </main>
 
   <footer class="max-w-5xl mx-auto w-full py-4 text-center text-xs text-slate-500 border-t border-slate-200">
-    <p>&copy; 2026 Panitia Pelaksana PORSENI KKM 003 NGUMPOBAN • Tulungagung</p>
+    <p>&copy; 2026 Panitia Pelaksana PORSENI KKM 003 NGUMPOBAN • Sumbergempol</p>
   </footer>
 
   <!-- Modal Notifikasi Modern -->
@@ -481,7 +488,7 @@
           <img 
             src="https://lh3.googleusercontent.com/d/1BpbeBWygHQpM93U7ih3zqezW35kps9VQ" 
             alt="Logo PORSENI" 
-            class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow-md"
+            class="h-10 sm:h-12 w-auto object-contain shrink-0 drop-shadow logo-white-shadow-sm"
           />
           <div>
             <h3 class="font-black text-sm sm:text-base leading-tight">Rekapitulasi Peserta PORSENI</h3>
@@ -647,7 +654,6 @@
         genderSelect.innerHTML = '<option value="PA">Putra (PA)</option><option value="PI">Putri (PI)</option>';
       }
 
-      // Tampilkan atau sembunyikan modul individu vs beregu
       if (isBeregu) {
         document.getElementById('sectionIndividu').classList.add('hidden');
         document.getElementById('sectionBeregu').classList.remove('hidden');
@@ -659,7 +665,7 @@
         document.getElementById('sectionBeregu').classList.add('hidden');
       }
 
-      // Logika Khusus Menyanyi Islami: Tampilkan Kolom Unggah Musik MP3
+      // Logika Menyanyi Islami: Tampilkan Kolom Unggah Musik MP3
       const containerFileMusik = document.getElementById('containerFileMusik');
       if (cabang === 'Menyanyi Islami') {
         containerFileMusik.classList.remove('hidden');
@@ -754,7 +760,6 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // Kompresi Kanvas Otomatis untuk Foto & Base64 Reader untuk Berkas/Audio MP3
     async function processFile(file) {
       if (!file) return null;
       if (file.type.startsWith('image/')) {
@@ -1054,7 +1059,7 @@
           `;
         }
 
-        // Tampilan Bingkai Foto 3x4 Resmi pada Slip Cetak
+        // Tampilan Pas Foto 3x4
         let fotoFrameHtml = "";
         if (data.urlFoto && data.tipeLomba === 'INDIVIDU') {
           fotoFrameHtml = `
