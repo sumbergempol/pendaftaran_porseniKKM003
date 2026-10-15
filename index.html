@@ -297,6 +297,24 @@
 
           </div>
         </div>
+
+        <!-- Kolom Khusus Musik MP3 (Otomatis Muncul Hanya untuk Cabang Menyanyi Islami) -->
+        <div id="containerFileMusik" class="hidden mt-4 pt-4 border-t border-slate-100">
+          <div id="boxFileMusik" class="bg-amber-50/90 p-4 rounded-xl border-2 border-amber-300 transition">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="block text-xs sm:text-sm font-bold text-amber-950 flex items-center gap-1.5">
+                <i data-feather="music" class="w-4 h-4 text-amber-700"></i>
+                <span>Unggah File Audio Musik / Minus One (.mp3) <span class="text-red-600">*</span></span>
+              </label>
+              <span class="text-[10px] bg-amber-600 text-white font-extrabold px-2 py-0.5 rounded shadow-sm">Khusus Menyanyi Islami</span>
+            </div>
+            <input type="file" id="fileMusik" accept=".mp3,audio/mpeg,audio/mp3" onchange="document.getElementById('boxFileMusik').classList.remove('field-error');" class="w-full text-xs file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-600 file:text-white hover:file:bg-amber-700 text-slate-600 cursor-pointer">
+            <p class="text-[11px] text-amber-900 mt-1.5 font-semibold leading-relaxed">
+              File wajib format audio <strong>.mp3</strong>. File akan otomatis disimpan ke folder musik dengan format nama: <code>MUSIK_PA/PI_Nama Lembaga_Nama Peserta.mp3</code>
+            </p>
+          </div>
+        </div>
+
       </div>
 
       <!-- Bagian Beregu: Input Foto Langsung di Setiap Baris Atlet -->
@@ -413,7 +431,7 @@
     </div>
   </div>
 
-  <!-- Modal Siap Cetak (KOP CENTER SIMETRIS & FOTO LENGKAP) -->
+  <!-- Modal Siap Cetak (KOP CENTER SIMETRIS, FOTO LENGKAP & LINK AUDIO MUSIK) -->
   <div id="modalBuktiSiapCetak" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
     <div class="bg-white w-full max-w-2xl max-h-[94vh] rounded-2xl shadow-2xl p-5 sm:p-7 overflow-y-auto" id="printableArea">
       
@@ -494,7 +512,7 @@
     // =========================================================================
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI:
     // =========================================================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxHIE25sp3CD_XF7FVYWl5mhxnXGcK0xzf6QBdCQdaloCuX_9ljFd8VNyIPNgG60T_tdA/exec";
+    const API_URL = "MASUKKAN_URL_WEB_APP_EXEC_DISINI";
 
     function getCleanApiUrl() {
       if (!API_URL) return "";
@@ -628,6 +646,7 @@
         genderSelect.innerHTML = '<option value="PA">Putra (PA)</option><option value="PI">Putri (PI)</option>';
       }
 
+      // Tampilkan atau sembunyikan modul individu vs beregu
       if (isBeregu) {
         document.getElementById('sectionIndividu').classList.add('hidden');
         document.getElementById('sectionBeregu').classList.remove('hidden');
@@ -638,10 +657,20 @@
         document.getElementById('sectionIndividu').classList.remove('hidden');
         document.getElementById('sectionBeregu').classList.add('hidden');
       }
+
+      // Logika Khusus Menyanyi Islami: Tampilkan Kolom Unggah Musik MP3
+      const containerFileMusik = document.getElementById('containerFileMusik');
+      if (cabang === 'Menyanyi Islami') {
+        containerFileMusik.classList.remove('hidden');
+      } else {
+        containerFileMusik.classList.add('hidden');
+        const inputMusik = document.getElementById('fileMusik');
+        if (inputMusik) inputMusik.value = '';
+      }
+
       refreshIcons();
     }
 
-    // Penambahan Input Foto 3x4 pada Setiap Baris Pemain
     function tambahBarisPemain(nama = "", nisn = "", tgl = "", kls = "3") {
       const tbody = document.getElementById('tbodyPemain');
       const rowIdx = tbody.children.length + 1;
@@ -724,7 +753,7 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // Kompresi Kanvas Otomatis Sisi Klien (~150KB, Bebas Crash Apps Script)
+    // Kompresi Kanvas Otomatis untuk Foto & Base64 Reader untuk Berkas/Audio MP3
     async function processFile(file) {
       if (!file) return null;
       if (file.type.startsWith('image/')) {
@@ -766,7 +795,7 @@
           const reader = new FileReader();
           reader.onload = () => resolve({
             fileName: file.name,
-            mimeType: file.type || 'application/pdf',
+            mimeType: file.type || 'application/octet-stream',
             base64: reader.result
           });
           reader.readAsDataURL(file);
@@ -822,6 +851,14 @@
         const fRapor = document.getElementById('fileRapor');
         if (!fRapor.files || fRapor.files.length === 0) return triggerError(document.getElementById('boxFileRapor'), "Harap unggah berkas Rapor Terakhir!");
 
+        // Validasi Khusus Menyanyi Islami
+        if (cabang === 'Menyanyi Islami') {
+          const fMusik = document.getElementById('fileMusik');
+          if (!fMusik.files || fMusik.files.length === 0) {
+            return triggerError(document.getElementById('boxFileMusik'), "Khusus cabang Menyanyi Islami, wajib mengunggah file musik/minus one (.mp3)!");
+          }
+        }
+
       } else {
         const rows = document.querySelectorAll('#tbodyPemain tr');
         if (rows.length === 0) return triggerError(document.getElementById('tabelPemain'), "Daftar susunan pemain tim beregu masih kosong!");
@@ -861,7 +898,7 @@
 
       const btn = document.getElementById('btnSubmit');
       btn.disabled = true;
-      btn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span><span>Mengunggah berkas & foto peserta...</span>';
+      btn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span><span>Mengunggah berkas, foto, dan audio musik...</span>';
 
       try {
         const cabang = document.getElementById('cabangLomba').value;
@@ -886,6 +923,14 @@
           payload.fileAkta = await processFile(document.getElementById('fileAkta').files[0]);
           payload.fileKK = await processFile(document.getElementById('fileKK').files[0]);
           payload.fileRapor = await processFile(document.getElementById('fileRapor').files[0]);
+
+          // Proses file musik jika Menyanyi Islami
+          if (cabang === 'Menyanyi Islami') {
+            const fMusik = document.getElementById('fileMusik');
+            if (fMusik.files && fMusik.files[0]) {
+              payload.fileMusik = await processFile(fMusik.files[0]);
+            }
+          }
         } else {
           const rows = document.querySelectorAll('#tbodyPemain tr');
           const tim = [];
@@ -998,6 +1043,7 @@
               ${data.urlAkta ? `<a href="${data.urlAkta}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Akta Kelahiran</a>` : '<span class="text-slate-400">Akta: -</span>'}
               ${data.urlKK ? `<a href="${data.urlKK}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Kartu Keluarga</a>` : '<span class="text-slate-400">KK: -</span>'}
               ${data.urlRapor ? `<a href="${data.urlRapor}" target="_blank" class="text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="file-text" class="w-3.5 h-3.5"></i>Rapor Terakhir</a>` : '<span class="text-slate-400">Rapor: -</span>'}
+              ${data.urlMusik ? `<a href="${data.urlMusik}" target="_blank" class="text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-300 font-bold hover:underline inline-flex items-center gap-1"><i data-feather="music" class="w-3.5 h-3.5 text-amber-600"></i>Musik MP3</a>` : ''}
             </div>
           `;
         } else {
@@ -1031,7 +1077,7 @@
           </div>
 
           <div class="mb-3">
-            <span class="text-slate-500 text-[11px] font-bold uppercase block mb-1">Tautan Dokumen Persyaratan & Foto:</span>
+            <span class="text-slate-500 text-[11px] font-bold uppercase block mb-1">Tautan Dokumen Persyaratan, Foto & Musik:</span>
             ${berkasHtml}
           </div>
 
@@ -1146,9 +1192,11 @@
               <td class="p-2.5 text-center text-slate-600 font-mono text-xs">${p.nisn}</td>
               <td class="p-2.5 text-center font-bold text-slate-700">${p.kelas}</td>
               <td class="p-2.5 text-center">
-                <div class="inline-flex items-center gap-1.5">
+                <div class="inline-flex flex-wrap items-center justify-center gap-1.5">
                   ${p.urlFoto ? `<a href="${p.urlFoto}" target="_blank" class="text-red-600 hover:text-red-800 font-bold text-xs inline-flex items-center gap-0.5" title="Lihat Pas Foto 3x4"><i data-feather="image" class="w-3 h-3"></i>Foto</a>` : ''}
-                  ${linkBerkas ? `<a href="${linkBerkas}" target="_blank" class="text-emerald-700 hover:text-emerald-900 font-bold text-xs inline-flex items-center gap-0.5">Berkas <i data-feather="external-link" class="w-3 h-3"></i></a>` : '<span class="text-slate-300">-</span>'}
+                  ${linkBerkas ? `<a href="${linkBerkas}" target="_blank" class="text-emerald-700 hover:text-emerald-900 font-bold text-xs inline-flex items-center gap-0.5">Berkas <i data-feather="external-link" class="w-3 h-3"></i></a>` : ''}
+                  ${p.urlMusik ? `<a href="${p.urlMusik}" target="_blank" class="text-amber-700 hover:text-amber-900 font-bold text-xs inline-flex items-center gap-0.5" title="Dengarkan Musik MP3"><i data-feather="music" class="w-3 h-3 text-amber-600"></i>Musik</a>` : ''}
+                  ${!p.urlFoto && !linkBerkas && !p.urlMusik ? '<span class="text-slate-300">-</span>' : ''}
                 </div>
               </td>
             </tr>
@@ -1161,15 +1209,15 @@
             <span class="text-xs bg-emerald-600 px-2.5 py-0.5 rounded-full font-bold shrink-0">${daftarPeserta.length} Atlet</span>
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs table-fixed min-w-[700px]">
+            <table class="w-full text-left text-xs table-fixed min-w-[720px]">
               <colgroup>
                 <col style="width: 44px;">
-                <col style="width: 210px;">
-                <col style="width: 180px;">
+                <col style="width: 200px;">
+                <col style="width: 170px;">
                 <col style="width: 95px;">
                 <col style="width: 105px;">
                 <col style="width: 55px;">
-                <col style="width: 110px;">
+                <col style="width: 130px;">
               </colgroup>
               <thead class="bg-slate-100 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
                 <tr>
@@ -1179,7 +1227,7 @@
                   <th class="p-2.5 text-center">Kategori</th>
                   <th class="p-2.5 text-center">NISN</th>
                   <th class="p-2.5 text-center">Kelas</th>
-                  <th class="p-2.5 text-center">Foto & Berkas</th>
+                  <th class="p-2.5 text-center">Berkas, Foto & Musik</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">${rowsHtml}</tbody>
